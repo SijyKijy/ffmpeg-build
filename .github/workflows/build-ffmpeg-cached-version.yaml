@@ -28,6 +28,7 @@ jobs:
             echo "arch=multi" >> $GITHUB_ENV
           else
             echo "arch=${{ inputs.architecture }}" >> $GITHUB_ENV
+          fi
 
       - name: Checkout ffmpeg-windows-build-helpers
         uses: actions/checkout@v4
