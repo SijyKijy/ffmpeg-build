@@ -1,0 +1,78 @@
+name: Build FFmpeg (cached version)
+
+on:
+  workflow_dispatch:
+    inputs:
+      architecture:
+        description: "Select architecture to build"
+        required: true
+        default: "both"
+        type: choice
+        options:
+          - win32
+          - win64
+          - both
+      version:
+        description: "FFmpeg version to checkout"
+        required: false
+        default: "n6.0"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Determine architecture
+        id: determine-arch
+        run: |
+          if [[ "${{ inputs.architecture }}" == "both" ]]; then
+            echo "arch=multi" >> $GITHUB_ENV
+          else
+            echo "arch=${{ inputs.architecture }}" >> $GITHUB_ENV
+
+      - name: Checkout ffmpeg-windows-build-helpers
+        uses: actions/checkout@v4
+        with:
+          repository: rdp/ffmpeg-windows-build-helpers
+          ref: master
+          persist-credentials: false
+
+      - name: Cache apt packages
+        uses: actions/cache@v3
+        with:
+          path: /var/cache/apt
+          key: ${{ runner.os }}-apt-${{ hashFiles('**/build-ffmpeg.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-apt-
+
+      - name: Update and install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install subversion ragel curl texinfo g++ ed bison flex cvs yasm automake libtool autoconf gcc cmake git make pkg-config zlib1g-dev unzip pax nasm gperf autogen bzip2 autoconf-archive p7zip-full meson clang python3-distutils python-is-python3 -y
+
+      - name: Cache FFmpeg dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ffmpeg-windows-build-helpers/sandbox/cross_compilers
+            ffmpeg-windows-build-helpers/sandbox/win64
+          key: ${{ runner.os }}-ffmpeg-deps-${{ hashFiles('**/cross_compile_ffmpeg.sh') }}
+          restore-keys: |
+            ${{ runner.os }}-ffmpeg-deps-
+
+      - name: Compile FFmpeg for ${{ env.arch }}
+        run: |
+          ./cross_compile_ffmpeg.sh \
+            --ffmpeg-git-checkout-version=${{ inputs.version }} \
+            --compiler-flavors=${{ env.arch }}
+
+      - name: Find generated archive
+        id: find-archive
+        run: |
+          archive_path=$(find $GITHUB_WORKSPACE/ffmpeg-windows-build-helpers/sandbox/redist/ -name "*.7z" | head -n 1)
+          echo "archive_path=$archive_path" >> $GITHUB_ENV
+
+      - name: Upload FFmpeg archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: ffmpeg-${{ env.arch }}
+          path: ${{ env.archive_path }}
