@@ -37,16 +37,21 @@ jobs:
           ref: master
           persist-credentials: false
 
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install subversion ragel curl texinfo g++ ed bison flex cvs yasm automake libtool autoconf gcc cmake git make pkg-config zlib1g-dev unzip pax nasm gperf autogen bzip2 autoconf-archive p7zip-full meson clang python3-distutils python-is-python3 -y
+      - name: Install APT dependencies
+        uses: awalsh128/cache-apt-pkgs-action@v1
+        with:
+          packages: subversion ragel curl texinfo g++ ed bison flex cvs yasm automake libtool autoconf gcc cmake git make pkg-config zlib1g-dev unzip pax nasm gperf autogen bzip2 autoconf-archive p7zip-full meson clang python3-distutils python-is-python3
+
+      - name: Install pip dependencies
+        run: sudo -H pip3 -qq install meson ninja
 
       - name: Compile FFmpeg for ${{ env.arch }}
         run: |
           ./cross_compile_ffmpeg.sh \
             --ffmpeg-git-checkout-version=${{ inputs.version }} \
-            --compiler-flavors=${{ env.arch }}
+            --compiler-flavors=${{ env.arch }} \
+            --gcc-cpu-count=$(nproc) \
+            --sandbox-ok=y
 
       - name: Find generated archive
         id: find-archive
