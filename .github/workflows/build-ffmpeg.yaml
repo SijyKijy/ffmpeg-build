@@ -19,7 +19,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Determine architecture
         id: determine-arch
@@ -40,7 +40,7 @@ jobs:
       - name: Install APT dependencies
         uses: awalsh128/cache-apt-pkgs-action@v1
         with:
-          packages: subversion ragel curl texinfo g++ ed bison flex cvs yasm automake libtool autoconf gcc cmake git make pkg-config zlib1g-dev unzip pax nasm gperf autogen bzip2 autoconf-archive p7zip-full meson clang python3-distutils python-is-python3
+          packages: subversion ragel curl texinfo g++ ed bison flex cvs yasm automake libtool autoconf gcc cmake git make pkg-config zlib1g-dev unzip pax nasm gperf autogen bzip2 autoconf-archive p7zip-full meson clang python3-distutils python-is-python3 mingw-w64 mingw-w64-tools mingw-w64-x86-64-dev
 
       - name: Install pip dependencies
         run: sudo -H pip3 -qq install meson ninja
