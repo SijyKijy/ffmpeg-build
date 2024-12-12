@@ -45,9 +45,6 @@ jobs:
       - name: Install pip dependencies
         run: sudo -H pip3 -qq install meson ninja
 
-      - name: Pre-conf
-        run: sudo autoreconf -fi
-
       - name: Compile FFmpeg for ${{ env.arch }}
         run: |
           ./cross_compile_ffmpeg.sh \
