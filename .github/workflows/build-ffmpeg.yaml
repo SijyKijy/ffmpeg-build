@@ -19,7 +19,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-20.04
     steps:
       - name: Determine architecture
         id: determine-arch
@@ -37,21 +37,61 @@ jobs:
           ref: master
           persist-credentials: false
 
-      - name: Install APT dependencies
-        uses: awalsh128/cache-apt-pkgs-action@v1
-        with:
-          packages: subversion ragel curl texinfo g++ ed bison flex cvs yasm automake libtool autoconf gcc cmake git make pkg-config zlib1g-dev unzip pax nasm gperf autogen bzip2 autoconf-archive p7zip-full meson clang python3-distutils python-is-python3 mingw-w64 mingw-w64-tools mingw-w64-x86-64-dev libtool-bin
+      # - name: Install APT dependencies
+      #   uses: awalsh128/cache-apt-pkgs-action@v1
+      #   with:
+      #     packages: subversion ragel curl texinfo g++ ed bison flex cvs yasm automake libtool autoconf gcc cmake git make pkg-config zlib1g-dev unzip pax nasm gperf autogen bzip2 autoconf-archive p7zip-full meson clang python3-distutils python-is-python3 mingw-w64 mingw-w64-tools mingw-w64-x86-64-dev libtool-bin
 
-      - name: Install pip dependencies
-        run: sudo -H pip3 -qq install meson ninja
+      # - name: Install pip dependencies
+      #   run: sudo -H pip3 -qq install meson ninja
+
+      - name: Install dependencie
+        run: |
+          apt-get update && \
+          apt-get install -y \
+          subversion \
+          ragel \
+          curl \
+          texinfo \
+          g++ \
+          bison \
+          flex \
+          cvs \
+          yasm \
+          automake \
+          libtool \
+          autoconf \
+          gcc \
+          cmake \
+          git \
+          make \
+          pkg-config \
+          zlib1g-dev \
+          unzip \
+          pax \
+          nasm \
+          gperf \
+          autogen \
+          bzip2 \
+          autoconf-archive \
+          p7zip-full \
+          meson \
+          clang \
+          python \
+          python3-setuptools \
+          wget \
+          ed
 
       - name: Compile FFmpeg for ${{ env.arch }}
         run: |
           ./cross_compile_ffmpeg.sh \
             --ffmpeg-git-checkout-version=${{ inputs.version }} \
             --compiler-flavors=${{ env.arch }} \
-            --gcc-cpu-count=$(nproc) \
-            --sandbox-ok=y
+            --build-ffmpeg-shared=y \
+            --build-ffmpeg-static=y \
+            --disable-nonfree=y \
+            --build-intel-qsv=y \
+            --enable-gpl=y
 
       - name: Find generated archive
         id: find-archive
