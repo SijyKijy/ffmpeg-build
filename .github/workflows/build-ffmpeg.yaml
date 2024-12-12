@@ -47,6 +47,7 @@ jobs:
 
       - name: Install dependencie
         run: |
+          sudo -i
           apt-get update && \
           apt-get install -y \
           subversion \
