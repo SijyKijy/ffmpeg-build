@@ -47,9 +47,8 @@ jobs:
 
       - name: Install dependencie
         run: |
-          sudo -i
-          apt-get update && \
-          apt-get install -y \
+          sudo apt-get update && \
+          sudo apt-get install -y \
           subversion \
           ragel \
           curl \
@@ -85,7 +84,7 @@ jobs:
 
       - name: Compile FFmpeg for ${{ env.arch }}
         run: |
-          ./cross_compile_ffmpeg.sh \
+          sudo ./cross_compile_ffmpeg.sh \
             --ffmpeg-git-checkout-version=${{ inputs.version }} \
             --compiler-flavors=${{ env.arch }} \
             --build-ffmpeg-shared=y \
