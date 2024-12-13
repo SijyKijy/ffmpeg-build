@@ -87,7 +87,7 @@ jobs:
           sudo ./cross_compile_ffmpeg.sh \
             --ffmpeg-git-checkout-version=${{ inputs.version }} \
             --compiler-flavors=${{ env.arch }} \
-            --build-ffmpeg-shared=y \
+            --build-ffmpeg-shared=n \
             --build-ffmpeg-static=y \
             --disable-nonfree=y \
             --build-intel-qsv=y \
