@@ -96,7 +96,14 @@ jobs:
       - name: Find generated archive
         id: find-archive
         run: |
-          archive_path=$(find $GITHUB_WORKSPACE/ffmpeg-windows-build-helpers/sandbox/redist/ -name "*.7z" | head -n 1)
+          echo "=== Looking for FFmpeg archive ==="
+          find $GITHUB_WORKSPACE/sandbox/redist -name "ffmpeg-*.7z"
+          
+          echo "=== All files in redist directory ==="
+          ls -la $GITHUB_WORKSPACE/sandbox/redist/
+          
+          # Store archive path in environment variable
+          archive_path=$(find $GITHUB_WORKSPACE/sandbox/redist -name "ffmpeg-*.7z" | head -n 1)
           echo "archive_path=$archive_path" >> $GITHUB_ENV
 
       - name: Upload FFmpeg archive
