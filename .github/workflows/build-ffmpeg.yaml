@@ -1,4 +1,4 @@
-name: "Build FFmpeg (${{ github.event.inputs.version }})"
+name: "Build FFmpeg"
 on:
   workflow_dispatch:
     inputs:
@@ -108,5 +108,5 @@ jobs:
       - name: Upload FFmpeg archive
         uses: actions/upload-artifact@v4
         with:
-          name: ffmpeg-${{ env.arch }}
+          name: ffmpeg-${{ inputs.version }}-${{ env.arch }}
           path: ${{ env.archive_path }}
